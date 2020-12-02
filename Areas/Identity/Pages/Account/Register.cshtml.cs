@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -14,8 +15,12 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using moni.Models;
+using moni.Services;
+using static moni.Models.Extensions.CustomAttributes;
+using moni.Helpers;
 
 namespace moni.Areas.Identity.Pages.Account
+
 {
     [AllowAnonymous]
     public class RegisterModel : PageModel
@@ -24,17 +29,19 @@ namespace moni.Areas.Identity.Pages.Account
         private readonly UserManager<FPUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IFPAvatarService _avatarService;
 
         public RegisterModel(
             UserManager<FPUser> userManager,
             SignInManager<FPUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender, IFPAvatarService AvatarService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _avatarService = AvatarService;
         }
 
         [BindProperty]
@@ -46,6 +53,16 @@ namespace moni.Areas.Identity.Pages.Account
 
         public class InputModel
         {
+            [Required]
+            [StringLength(50)]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+
+            [Required]
+            [StringLength(50)]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
+
             [Required]
             [EmailAddress]
             [Display(Name = "Email")]
@@ -61,6 +78,10 @@ namespace moni.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [MaxFileSize(2 * 1024 * 1024)]
+            [AllowedExtensions(new string[] { "jpg", ".png", ".png"})]
+            public IFormFile FormFile { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -75,7 +96,20 @@ namespace moni.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new FPUser { UserName = Input.Email, Email = Input.Email };
+                var user = new FPUser {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    FirstName = Input.FirstName,
+                    LastName = Input.LastName,
+                    FileName = "DefaultAvatar.png",
+                    FileData = await ImageHelper.AssignAvatarAsync("DefaultAvatar.png")
+
+                };
+                if (Input.FormFile != null)
+                {
+                    user.FileName = Input.FormFile.FileName;
+                    user.FileData = await _avatarService.ConvertFileToByteArrayAsync(Input.FormFile);
+                }
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

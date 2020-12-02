@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace moni.Models
 {
@@ -13,16 +14,24 @@ namespace moni.Models
         [Required]
         [StringLength(50)]
         public string FirstName { get; set; }
+
         [Required]
         [StringLength(50)]
         public string LastName { get; set; }
+
         [Display(Name = "Full Name")]
         [NotMapped]
         public string FullName { get { return $"{FirstName} {LastName}"; } }
 
         [Display(Name = "avatar")]
-        public string ImagePath { get; set; }
-        public byte[] ImageData { get; set; }
+        public string FilePath { get; set; }
+
+        public string FileName { get; set; }
+
+        public byte[] FileData { get; set; }
+
+        [NotMapped]
+        public IFormFile FormFile { get; set; }
 
     }
 }

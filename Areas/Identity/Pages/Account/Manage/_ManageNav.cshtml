@@ -1,4 +1,5 @@
-﻿@inject SignInManager<FPUser> SignInManager
+﻿@using moni.Models
+@inject SignInManager<FPUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
