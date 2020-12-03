@@ -14,5 +14,6 @@ namespace moni.Data.Data
             HeadOfHouseHold,
             Member
         }
+
     }
 }

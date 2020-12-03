@@ -32,6 +32,7 @@ namespace moni.Models
 
         [NotMapped]
         public IFormFile FormFile { get; set; }
+        public int HouseholdId { get; set; }
 
     }
 }

@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using moni.Helpers;
 
 
 namespace moni
@@ -32,9 +33,9 @@ namespace moni
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<FPUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                options.UseNpgsql(
+                    DataHelper.GetConnectionString(Configuration)));
+            services.AddIdentity<FPUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<IFPAvatarService, FPAvatarService>();
