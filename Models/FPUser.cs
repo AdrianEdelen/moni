@@ -23,7 +23,7 @@ namespace moni.Models
         [NotMapped]
         public string FullName { get { return $"{FirstName} {LastName}"; } }
 
-        [Display(Name = "avatar")]
+        [Display(Name = "Avatar")]
         public string FilePath { get; set; }
 
         public string FileName { get; set; }

@@ -35,9 +35,12 @@ namespace moni
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(
                     DataHelper.GetConnectionString(Configuration)));
-            services.AddIdentity<FPUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<FPUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
+            
+                
             services.AddScoped<IFPAvatarService, FPAvatarService>();
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IEmailSender, EmailService>();
