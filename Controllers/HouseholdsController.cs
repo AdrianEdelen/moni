@@ -2,22 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using moni.Data;
 using moni.Models;
+using moni.Models.ViewModels;
+using static moni.Data.Data.SeedHelper;
 
 namespace moni.Controllers
 {
     public class HouseholdsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<FPUser> _userManager;
+        private readonly SignInManager<FPUser> _signInManager;
 
-        public HouseholdsController(ApplicationDbContext context)
+        public HouseholdsController(ApplicationDbContext context, UserManager<FPUser> userManager, SignInManager<FPUser> signInManager)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
+
+
 
         // GET: Households
         public async Task<IActionResult> Index()
@@ -40,7 +49,13 @@ namespace moni.Controllers
                 return NotFound();
             }
 
-            return View(household);
+            DashboardViewModel vm = new DashboardViewModel()
+            {
+                User = await _userManager.GetUserAsync(User),
+                Household = household,
+                Category = _context.Category.Where(c => c.HouseholdId == household.Id).ToList()
+            };
+            return View(vm);
         }
 
         // GET: Households/Create
@@ -54,13 +69,20 @@ namespace moni.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Greeting,Established")] Household household)
+        public async Task<IActionResult> Create([Bind("Name,Greeting")] Household household)
         {
+            
             if (ModelState.IsValid)
             {
+                household.Established = DateTimeOffset.Now;
                 _context.Add(household);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var user = await _userManager.GetUserAsync(User);
+                user.HouseholdId = household.Id;
+                await _userManager.AddToRoleAsync(user, Roles.HeadOfHouseHold.ToString());
+                await _signInManager.RefreshSignInAsync(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Details", "Households", new { id = household.Id });
             }
             return View(household);
         }

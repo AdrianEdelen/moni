@@ -13,7 +13,7 @@ namespace moni.Data
             : base(options)
         {
         }
-        public DbSet<moni.Models.Attachment> Attachment { get; set; }
+        
         public DbSet<moni.Models.BankAccount> BankAccount { get; set; }
         public DbSet<moni.Models.Category> Category { get; set; }
         public DbSet<moni.Models.CategoryItem> CategoryItem { get; set; }

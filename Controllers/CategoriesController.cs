@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace moni.Controllers
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<FPUser> _userManager;
 
-        public CategoriesController(ApplicationDbContext context)
+        public CategoriesController(ApplicationDbContext context, UserManager<FPUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Categories
@@ -44,8 +47,12 @@ namespace moni.Controllers
         }
 
         // GET: Categories/Create
-        public IActionResult Create()
+        public IActionResult Create(int? id)
         {
+            var category = new Category()
+            {
+                HouseholdId = (int)id
+            };
             return View();
         }
 
@@ -54,13 +61,16 @@ namespace moni.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,HouseholdId,Name,Description")] Category category)
+        public async Task<IActionResult> Create([Bind("Name,Description")] Category category)
         {
+            var user = await _userManager.GetUserAsync(User);
+            
             if (ModelState.IsValid)
             {
+                category.HouseholdId = user.HouseholdId;
                 _context.Add(category);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Details", "Households", new { id = user.HouseholdId });
             }
             return View(category);
         }

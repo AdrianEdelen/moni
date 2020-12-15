@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace moni.Controllers
     public class InvitationsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<FPUser> _userManager;
 
-        public InvitationsController(ApplicationDbContext context)
+        public InvitationsController(ApplicationDbContext context, UserManager<FPUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Invitations
@@ -54,10 +57,16 @@ namespace moni.Controllers
         // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,HouseholdId,Created,Expires,Accepted,EmailTo,Subject,Body,Code")] Invitation invitation)
+        public async Task<IActionResult> Create([Bind("Id,HouseholdId,Created,Expires,Accepted,EmailTo,Subject,Body")] Invitation invitation)
         {
+
             if (ModelState.IsValid)
             {
+                var user = await _userManager.GetUserAsync(User);
+                invitation.Subject = "You Have been invited to join " + user.FullName + "'s household!";
+                invitation.Body = "Please Click the link below to join " + user.FullName + "'s household on BUX finance tracker";
+                invitation.Expires = DateTimeOffset
+                invitation.Code = Guid.NewGuid();
                 _context.Add(invitation);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

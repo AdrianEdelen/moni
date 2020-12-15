@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using moni.Data;
+using moni.Data.Data;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -13,6 +15,8 @@ namespace moni.Helpers
 {
     public class DataHelper
     {
+        public static object ContextSeed { get; private set; }
+
         public static string GetConnectionString(IConfiguration configuration)
         {
             //The default connection string will come from appSettings like usual
@@ -47,7 +51,8 @@ namespace moni.Helpers
                 //Normally I would just inject these service but you cant use a constructor in a static class
                 using var svcScope = host.Services.CreateScope();
                 var svcProvider = svcScope.ServiceProvider;
-
+                var roleManager = svcProvider.GetRequiredService<RoleManager<IdentityRole>> ();
+                await SeedHelper.SeedRolesAsync(roleManager);
                 //The service will run your migrations
                 var dbContextSvc = svcProvider.GetRequiredService<ApplicationDbContext>();
                 await dbContextSvc.Database.MigrateAsync();

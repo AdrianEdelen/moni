@@ -1,36 +1,250 @@
-﻿@model moni.Models.Household
-
+﻿@model moni.Models.ViewModels.DashboardViewModel
+@inject moni.Services.IFPModalService modalService
 @{
-    ViewData["Title"] = "Details";
+	ViewData["Title"] = "Details";
 }
 
 <h1>Details</h1>
 
 <div>
-    <h4>Household</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Greeting)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Greeting)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Established)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Established)
-        </dd>
-    </dl>
+	<h4>Household</h4>
+	<hr />
+	<dl class="row">
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Household.Name)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Household.Name)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Household.Greeting)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Household.Greeting)
+		</dd>
+		<dt class="col-sm-2">
+			@Html.DisplayNameFor(model => model.Household.Established)
+		</dt>
+		<dd class="col-sm-10">
+			@Html.DisplayFor(model => model.Household.Established)
+		</dd>
+	</dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+
+<select>
+	<optgroup label="Swedish Cars">
+		<option value="volvo">Volvo</option>
+		<option value="saab">Saab</option>
+	</optgroup>
+	<optgroup label="German Cars">
+		<option value="mercedes">Mercedes</option>
+		<option value="audi">Audi</option>
+	</optgroup>
+</select>
+
+@*@Html.DropDownList("CategoryId", modalService.CategoryDropDown(), new { @class = "form-control" })
+	@{
+		var selectedCat =
+	}
+	@Html.DropDownList("CategoryItemId", modalService.CategoryItemDropDown(selectedCat), new { @class = "form-control" })*@
+
+
+
+<!-- Modal join household -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCategory">Add Category</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createCategoryItem">Add Category Item</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTransaction">Add Transaction</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addBankAccount">Add Bank Account</button>
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#inviteModal">Invite people to household</button>
+
+<!-- Modal Create Category -->
+<div class="modal fade" id="createCategory" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="col-md-4">
+					<form asp-action="Create" asp-controller="Categories">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+						<div class="form-group">
+							<label>Category Name:</label>
+							<input type="text" class="form-control" name="Name" />
+						</div>
+						<div class="form-group">
+							<label>Category Description</label>
+							<input type="text" class="form-control" name="Description" />
+						</div>
+						<div class="form-group">
+							<input type="submit" value="Create" class="btn btn-primary" />
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- seed a no category item to go with the no category. -->
+<!-- Modal Create Category Item -->
+<div class="modal fade" id="createCategoryItem" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="col-md-4">
+					<form asp-action="Create" asp-controller="Categories">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						needs categoryID
+						Name
+						Description
+						Target amount
+						actual amount should be nullable and then set programatically based on the transactions that are of that category
+
+						<div class="form-group">
+							<input type="submit" value="Create" class="btn btn-primary" />
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Create Transaction -->
+<div class="modal fade" id="addTransaction" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Create" asp-controller="Transactions">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group">
+						need to bring in the category, and the category item for each category
+						need to have a drop down for which bank account
+						set transaction type 'withdrawal/deposit
+						set amount
+					</div>
+					<input type="submit" value="Create" class="btn btn-primary" />
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal Create bank account -->
+<div class="modal fade" id="addBankAccount" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Create" asp-controller="BankAccounts">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group">
+						needs householdId
+						name
+						type
+						starting balance
+						current balance will be set in the controllerto be the same as starting balance
+					</div>
+					<input type="submit" value="Create" class="btn btn-primary" />
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal invite person -->
+<div class="modal fade" id="inviteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Create" asp-controller="BankAccounts">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group">
+						need householdid
+						need expires
+						need email to (the person who is recieving the invite)
+						need subject
+						need body
+						code is programitcally generated
+					</div>
+					<input type="submit" value="Create" class="btn btn-primary" />
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+@* seed a 'no category' category so users can start making transactions right away *@
+@* hide category item create until atleast one category is made *@
+<div class="card-deck">
+	<div class="card">
+
+		<div class="card-body">
+			<h5 class="card-title">Category List</h5>
+			<p class="card-text">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+			<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+		</div>
+	</div>
+	<div class="card">
+
+		<div class="card-body">
+			<h5 class="card-title">category items</h5>
+			<p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
+			<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+		</div>
+	</div>
+	<div class="card">
+		0
+		<div class="card-body">
+			<h5 class="card-title">Card title</h5>
+			<p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
+			<p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+		</div>
+	</div>
 </div>

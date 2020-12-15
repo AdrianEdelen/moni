@@ -11,5 +11,6 @@ namespace moni.Models
         public int HouseholdId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public virtual IEnumerable<CategoryItem> CategoryItem { get; set; } = new HashSet<CategoryItem>();
     }
 }

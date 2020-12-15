@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using moni.Data.Data;
 using moni.Helpers;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace moni
         {
             var host = CreateHostBuilder(args).Build();
             await DataHelper.ManageData(host);
+            
             host.Run();
         }
 

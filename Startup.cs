@@ -44,7 +44,7 @@ namespace moni
             services.AddScoped<IFPAvatarService, FPAvatarService>();
             services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
             services.AddTransient<IEmailSender, EmailService>();
-
+            services.AddScoped<IFPModalService, FPModalService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
